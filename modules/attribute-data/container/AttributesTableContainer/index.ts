@@ -1,0 +1,1 @@
+export { AttributesTableContainer } from './AttributesTableContainer'

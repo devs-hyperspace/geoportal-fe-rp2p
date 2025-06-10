@@ -1,0 +1,1 @@
+export { CustomRadarChart } from './CustomRadarChart'

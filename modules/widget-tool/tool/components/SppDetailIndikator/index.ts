@@ -1,0 +1,1 @@
+export { SppDetailIndikator } from './SppDetailIndikator'

@@ -1,0 +1,297 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int     @id @default(autoincrement())
+  username           String  @unique
+  password           String
+  kabkotId           String?
+  groupId            String?
+  roleId             Int
+  geonodeUid         Int
+  name               String
+  geonodeAccessToken String
+  group              Group?  @relation(fields: [groupId], references: [id])
+  kabkot             Kabkot? @relation(fields: [kabkotId], references: [id])
+  role               Role    @relation(fields: [roleId], references: [id])
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
+model Group {
+  id       String  @id
+  name     String
+  kabkotId String?
+  kabkot   Kabkot? @relation(fields: [kabkotId], references: [id])
+  users    User[]
+}
+
+model Kabkot {
+  id     String  @id
+  name   String
+  groups Group[]
+  users  User[]
+}
+
+model admin_desa {
+  kode_provinsi   String                  @db.VarChar
+  kode_kabkot     String                  @db.VarChar
+  kode_kecamatan  String                  @db.VarChar
+  kode_desa       String                  @id @db.VarChar
+  nama_desa       String                  @db.VarChar
+  jumlah_penduduk BigInt
+  islam           BigInt
+  kristen         BigInt
+  katolik         BigInt
+  budha           BigInt
+  hindu           BigInt
+  konghucu        BigInt
+  geometry        Unsupported("geometry")
+  admin_kabkot    admin_kabkot            @relation(fields: [kode_kabkot], references: [kode_kabkot], onDelete: NoAction, onUpdate: NoAction)
+  admin_kecamatan admin_kecamatan         @relation(fields: [kode_kecamatan], references: [kode_kecamatan], onDelete: NoAction, onUpdate: NoAction)
+  admin_provinsi  admin_provinsi          @relation(fields: [kode_provinsi], references: [kode_provinsi], onDelete: NoAction, onUpdate: NoAction)
+  poi             poi[]
+
+  @@index([geometry], map: "idx_admin_desa_geometry", type: Gist)
+  @@index([kode_desa], map: "ix_admin_desa_kode_desa")
+}
+
+model admin_kabkot {
+  kode_provinsi     String                  @db.VarChar
+  kode_kabkot       String                  @id @db.VarChar
+  nama_kabkot       String                  @db.VarChar
+  jumlah_penduduk   BigInt
+  islam             BigInt
+  kristen           BigInt
+  katolik           BigInt
+  budha             BigInt
+  hindu             BigInt
+  konghucu          BigInt
+  geometry          Unsupported("geometry")
+  admin_desa        admin_desa[]
+  admin_provinsi    admin_provinsi          @relation(fields: [kode_provinsi], references: [kode_provinsi], onDelete: NoAction, onUpdate: NoAction)
+  admin_kecamatan   admin_kecamatan[]
+  poi               poi[]
+  spp_city_result   spp_city_result[]
+  spp_detail_result spp_detail_result[]
+  spp_result        spp_result[]
+
+  @@index([geometry], map: "idx_admin_kabkot_geometry", type: Gist)
+  @@index([kode_kabkot], map: "ix_admin_kabkot_kode_kabkot")
+}
+
+model admin_kecamatan {
+  kode_provinsi   String                  @db.VarChar
+  kode_kabkot     String                  @db.VarChar
+  kode_kecamatan  String                  @id @db.VarChar
+  nama_kecamatan  String                  @db.VarChar
+  jumlah_penduduk BigInt
+  islam           BigInt
+  kristen         BigInt
+  katolik         BigInt
+  budha           BigInt
+  hindu           BigInt
+  konghucu        BigInt
+  geometry        Unsupported("geometry")
+  admin_desa      admin_desa[]
+  admin_kabkot    admin_kabkot            @relation(fields: [kode_kabkot], references: [kode_kabkot], onDelete: NoAction, onUpdate: NoAction)
+  admin_provinsi  admin_provinsi          @relation(fields: [kode_provinsi], references: [kode_provinsi], onDelete: NoAction, onUpdate: NoAction)
+  poi             poi[]
+
+  @@index([geometry], map: "idx_admin_kecamatan_geometry", type: Gist)
+  @@index([kode_kecamatan], map: "ix_admin_kecamatan_kode_kecamatan")
+}
+
+model admin_provinsi {
+  kode_provinsi   String                  @id @db.VarChar
+  nama_provinsi   String                  @db.VarChar
+  jumlah_penduduk BigInt
+  islam           BigInt
+  kristen         BigInt
+  katolik         BigInt
+  budha           BigInt
+  hindu           BigInt
+  konghucu        BigInt
+  geometry        Unsupported("geometry")
+  admin_desa      admin_desa[]
+  admin_kabkot    admin_kabkot[]
+  admin_kecamatan admin_kecamatan[]
+  poi             poi[]
+
+  @@index([geometry], map: "idx_admin_provinsi_geometry", type: Gist)
+  @@index([kode_provinsi], map: "ix_admin_provinsi_kode_provinsi")
+}
+
+model alembic_version {
+  version_num String @id(map: "alembic_version_pkc") @db.VarChar(32)
+}
+
+model items {
+  id   Int     @id @default(autoincrement())
+  name String? @db.VarChar
+
+  @@index([id], map: "ix_items_id")
+  @@index([name], map: "ix_items_name")
+}
+
+model kategori_poi {
+  id_sub_kategori String @id @db.VarChar
+  id_kategori     String @db.VarChar
+  sub_kategori    String @db.VarChar
+  kategori        String @db.VarChar
+  poi             poi[]
+
+  @@index([id_sub_kategori], map: "ix_kategori_poi_id_sub_kategori")
+}
+
+model poi {
+  id                       Int                     @id @default(autoincrement())
+  id_kategori              String                  @db.VarChar
+  id_sub_kategori          String                  @db.VarChar
+  kode_provinsi            String                  @db.VarChar
+  kode_kabkot              String                  @db.VarChar
+  kode_kecamatan           String                  @db.VarChar
+  kode_desa                String                  @db.VarChar
+  geometry                 Unsupported("geometry")
+  poi_name                 String                  @db.VarChar
+  source                   String                  @db.VarChar
+  lokasi                   String?                 @db.VarChar
+  kapasitas                Int?
+  pemilik                  String?                 @db.VarChar
+  kondisi                  String?                 @db.VarChar
+  nama_pengelola           String?                 @db.VarChar
+  okupansi                 Int?
+  kualitas                 String?                 @db.VarChar
+  nilai_aset               BigInt?
+  tipe_penanganan          String?                 @db.VarChar
+  biaya_penanganan         BigInt?
+  tanggal_pembaharuan_data DateTime?               @db.Timestamp(6)
+  emisi_karbon             Float?
+  kategori_poi             kategori_poi            @relation(fields: [id_sub_kategori], references: [id_sub_kategori], onDelete: NoAction, onUpdate: NoAction)
+  admin_desa               admin_desa              @relation(fields: [kode_desa], references: [kode_desa], onDelete: NoAction, onUpdate: NoAction)
+  admin_kabkot             admin_kabkot            @relation(fields: [kode_kabkot], references: [kode_kabkot], onDelete: NoAction, onUpdate: NoAction)
+  admin_kecamatan          admin_kecamatan         @relation(fields: [kode_kecamatan], references: [kode_kecamatan], onDelete: NoAction, onUpdate: NoAction)
+  admin_provinsi           admin_provinsi          @relation(fields: [kode_provinsi], references: [kode_provinsi], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([geometry], map: "idx_poi_geometry", type: Gist)
+  @@index([id], map: "ix_poi_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+model spp_city_result {
+  id              Int          @id @default(autoincrement())
+  kode_kabkot     String       @db.VarChar
+  jumlah_penduduk Int
+  capaian         Float
+  grafik_source   Json?
+  kelas_capaian   String       @db.VarChar
+  color           String       @db.VarChar
+  created_at      DateTime?    @default(now()) @db.Timestamp(6)
+  admin_kabkot    admin_kabkot @relation(fields: [kode_kabkot], references: [kode_kabkot], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id], map: "ix_spp_city_result_id")
+}
+
+model spp_detail_result {
+  id                       Int                     @id @default(autoincrement())
+  kode_admin               String                  @db.VarChar
+  nama_admin               String                  @db.VarChar
+  admin_level              String                  @db.VarChar
+  admin_level_id           String                  @db.VarChar
+  indikator_id             Int
+  indikator                String                  @db.VarChar
+  jumlah_penduduk          Int
+  jumlah_penduduk_tertentu Int
+  jumlah_fasilitas         Int
+  jumlah_defisit_fasilitas Int
+  ambang_batas             Int
+  capaian                  Float
+  kelas_capaian            String                  @db.VarChar
+  color                    String                  @db.VarChar
+  poi_detail               Json?
+  geometry                 Unsupported("geometry")
+  kode_kabkot              String                  @db.VarChar
+  spp_indikator            spp_indikator           @relation(fields: [indikator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  admin_kabkot             admin_kabkot            @relation(fields: [kode_kabkot], references: [kode_kabkot], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([geometry], map: "idx_spp_detail_result_geometry", type: Gist)
+  @@index([id], map: "ix_spp_detail_result_id")
+}
+
+model spp_indikator {
+  id                 Int                 @id @default(autoincrement())
+  indikator          String              @db.VarChar
+  kategori           String              @db.VarChar
+  id_kategori        String              @db.VarChar
+  sub_kategori       String              @db.VarChar
+  id_sub_kategori    String              @db.VarChar
+  unit               String              @db.VarChar
+  ambang_batas       Int
+  admin_level_id     String              @db.VarChar
+  admin_level        String              @db.VarChar
+  attribute_penduduk String              @db.VarChar
+  weight             Float?
+  spp_detail_result  spp_detail_result[]
+  spp_result         spp_result[]
+
+  @@index([id], map: "ix_spp_indikator_id")
+}
+
+model spp_result {
+  id                       Int           @id @default(autoincrement())
+  indikator_id             Int
+  indikator                String        @db.VarChar
+  jumlah_penduduk          Int
+  jumlah_penduduk_tertentu Int
+  jumlah_fasilitas         Int
+  jumlah_defisit_fasilitas Int
+  ambang_batas             Int
+  capaian                  Float
+  kelas_capaian            String        @db.VarChar
+  color                    String        @db.VarChar
+  kode_kabkot              String        @db.VarChar
+  admin_level              String        @db.VarChar
+  grafik_source            Json
+  spp_indikator            spp_indikator @relation(fields: [indikator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  admin_kabkot             admin_kabkot  @relation(fields: [kode_kabkot], references: [kode_kabkot], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id], map: "ix_spp_result_id")
+}
+
+model spp_klasifikasi {
+  id    Int     @id @default(autoincrement())
+  kelas String  @db.VarChar
+  min   Float
+  max   Float
+  color String? @db.VarChar
+
+  @@index([id], map: "ix_spp_klasifikasi_id")
+}
+
+model spp_settings_log {
+  id         Int       @id @default(autoincrement())
+  table_name String    @db.VarChar
+  operation  String    @db.VarChar
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([id], map: "ix_spp_settings_log_id")
+}

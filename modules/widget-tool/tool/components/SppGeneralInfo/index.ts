@@ -1,0 +1,1 @@
+export {SppGeneralInfo} from './SppGeneralInfo'

@@ -1,0 +1,29 @@
+.maplibregl-ctrl-geocoder {
+    min-width: 300px;
+    width: auto;
+}
+
+.maplibregl-ctrl-geocoder--input {
+    height: 29px !important;
+    padding: 6px !important;
+}
+
+.maplibregl-ctrl-geocoder--icon-search {
+    display: none;
+}
+
+.maplibregl-ctrl-geocoder--icon {
+    top: 6px !important;
+}
+
+.maplibregl-ctrl-geocoder--icon-close {
+    margin-top: 0;
+}
+
+.maplibregl-ctrl-geocoder .suggestions {
+    top: calc(100% + 11px);
+}
+
+.maplibregl-ctrl-geocoder--input:focus {
+    outline: none;
+}

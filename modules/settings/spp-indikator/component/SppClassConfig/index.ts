@@ -1,0 +1,1 @@
+export {SppClassConfig} from "./SppClassConfig"

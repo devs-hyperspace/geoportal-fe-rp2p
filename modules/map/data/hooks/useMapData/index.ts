@@ -1,0 +1,1 @@
+export { useMapData } from './useMapData'

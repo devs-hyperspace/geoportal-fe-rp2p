@@ -1,0 +1,1 @@
+export {TableSubDetailIndikator} from './TableSubDetailIndikator'

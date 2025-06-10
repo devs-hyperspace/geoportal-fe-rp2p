@@ -1,0 +1,1 @@
+export {SppIndikatorTable} from './SppIndikatorTable'

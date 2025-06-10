@@ -1,0 +1,1 @@
+export {SppDetailIndikatorAdmin} from './SppDetailIndikatorAdmin'

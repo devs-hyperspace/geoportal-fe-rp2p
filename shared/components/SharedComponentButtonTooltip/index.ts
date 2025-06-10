@@ -1,0 +1,1 @@
+export { SharedComponentButtonTooltip } from './SharedComponentButtonTooltip';

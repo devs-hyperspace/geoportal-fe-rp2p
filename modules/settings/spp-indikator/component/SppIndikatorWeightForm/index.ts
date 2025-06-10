@@ -1,0 +1,1 @@
+export {SppIndikatorWeightForm} from './SppIndikatorWeightForm'
