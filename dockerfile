@@ -13,6 +13,8 @@ RUN npm install
 # Copy Prisma schema and application code
 COPY prisma ./prisma/
 
+RUN apk add --no-cache openssl
+
 COPY . .
 
 
@@ -24,6 +26,8 @@ RUN npm run build
 
 # Now create a production image
 FROM node:18-alpine AS production
+
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
