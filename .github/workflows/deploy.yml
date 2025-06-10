@@ -1,0 +1,46 @@
+name: Deploy to SSH Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Test SSH connection
+      run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo SSH connection successful"
+
+    - name: Copy files to server
+      run: |
+        rsync -avz --exclude=".git" --exclude="node_modules" . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/app
+
+    - name: Deploy .env file
+      run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          echo "${{ secrets.ENV_FILE }}" > /home/${{ secrets.SSH_USER }}/app/.env
+        EOF
+
+    - name: Add GitHub Actions runner to Docker group
+      run: |
+        sudo usermod -aG docker $(whoami)
+
+    - name: Deploy on server
+      run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd /home/${{ secrets.SSH_USER }}/app
+          docker compose down
+          docker compose up --build -d
+        EOF
