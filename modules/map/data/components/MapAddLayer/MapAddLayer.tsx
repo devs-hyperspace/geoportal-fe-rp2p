@@ -118,12 +118,16 @@ export const MapAddLayer: React.FC<MapAddLayerProps> = (props) => {
                                             <div className="w-full h-3/6 relative rounded">
                                                 {item.thumbnail_url ? (
                                                     <Image
-                                                        src={item.thumbnail_url}
+                                                        src={item.thumbnail_url.includes('nodeserver.geoportal.co.id')
+                                                            ? `/api/image-proxy?url=${encodeURIComponent(item.thumbnail_url)}`
+                                                            : item.thumbnail_url}
                                                         alt={item.title}
-                                                        width={300}
-                                                        height={200}
-                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                        className="w-full h-full object-cover"
+                                                        width="0"
+                                                        height="0"
+                                                        sizes="100vw"
+                                                        className="w-full h-full"
+                                                        placeholder='blur'
+                                                        blurDataURL='/image/placeholder.jpg'
                                                         onError={(e) => {
                                                             e.currentTarget.src = "/image/placeholder.jpg";
                                                         }}
@@ -169,14 +173,13 @@ export const MapAddLayer: React.FC<MapAddLayerProps> = (props) => {
                                                             {/* Avatar */}
                                                             {item.owner.avatar && (
                                                                 <Image
-                                                                    src={item.owner.avatar}
+                                                                    src={item.owner.avatar.includes('nodeserver.geoportal.co.id')
+                                                                        ? `/api/image-proxy?url=${encodeURIComponent(item.owner.avatar)}`
+                                                                        : item.owner.avatar}
                                                                     alt="avatar"
                                                                     width={15}
                                                                     height={15}
                                                                     className="rounded-lg shrink-0"
-                                                                    onError={(e) => {
-                                                                        e.currentTarget.style.display = 'none';
-                                                                    }}
                                                                 />
                                                             )}
 
