@@ -9,9 +9,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Only allow nodeserver.geoportal.co.id to prevent abuse
+    // Allow nodeserver.geoportal.co.id and gravatar.com to prevent abuse
     const url = new URL(imageUrl);
-    if (url.hostname !== 'nodeserver.geoportal.co.id') {
+    if (url.hostname !== 'nodeserver.geoportal.co.id' && url.hostname !== 'www.gravatar.com') {
       return new NextResponse('Unauthorized domain', { status: 403 });
     }
 

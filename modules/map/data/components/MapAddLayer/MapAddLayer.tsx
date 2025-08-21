@@ -26,6 +26,24 @@ interface MapAddLayerProps {
     onAddLayer: (x: any) => void;
 }
 
+// Function to get initials from a name
+const getInitials = (name: string) => {
+    return name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .slice(0, 2)
+        .join('');
+};
+
+// Function to get color based on name
+const getAvatarColor = (name: string) => {
+    const colors = [
+        'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500',
+        'bg-indigo-500', 'bg-yellow-500', 'bg-red-500', 'bg-gray-500'
+    ];
+    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+};
 
 export const MapAddLayer: React.FC<MapAddLayerProps> = (props) => {
     const {
@@ -170,17 +188,11 @@ export const MapAddLayer: React.FC<MapAddLayerProps> = (props) => {
                                                 <div className="flex flex-row justify-between items-end w-full gap-2">
                                                     <div className="flex flex-col justify-between items-start gap-1 min-w-0 flex-1">
                                                         <div className="flex flex-row gap-1 items-center min-w-0 flex-wrap">
-                                                            {/* Avatar */}
-                                                            {item.owner.avatar && (
-                                                                <Image
-                                                                    src={item.owner.avatar.includes('nodeserver.geoportal.co.id')
-                                                                        ? `/api/image-proxy?url=${encodeURIComponent(item.owner.avatar)}`
-                                                                        : item.owner.avatar}
-                                                                    alt="avatar"
-                                                                    width={15}
-                                                                    height={15}
-                                                                    className="rounded-lg shrink-0"
-                                                                />
+                                                            {/* Avatar with Initials */}
+                                                            {item.owner.username && (
+                                                                <div className={`w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center text-xs font-semibold shrink-0`}>
+                                                                    {getInitials(item.owner.username)}
+                                                                </div>
                                                             )}
 
                                                             {/* Badges - Ensuring they wrap and don't overflow */}
