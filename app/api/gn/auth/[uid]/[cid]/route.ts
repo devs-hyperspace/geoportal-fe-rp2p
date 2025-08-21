@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: { uid: number 
     const redirectUri = `${process.env.GEONODE_REDIRECT_URI}/${geonodeUId}/${clientId}`;
     const refreshToken = req.cookies.get('refresh_token');
 
-    
+
 
 
     if (!code) {
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: { uid: number 
     }
 
     try {
-   
+
 
         const tokenResponse = await fetch('https://nodeserver.geoportal.co.id/o/token/', {
             method: 'POST',
@@ -37,35 +37,35 @@ export async function GET(req: NextRequest, { params }: { params: { uid: number 
                 scope: 'openid write',
             })
         });
-        
+
         if (!tokenResponse.ok) {
             const errorText = await tokenResponse.text();
             console.error('Token Response Error:', errorText);
             throw new Error(`Failed to fetch the access token. Status: ${tokenResponse.status}`);
         }
-    
+
         const tokenData = await tokenResponse.json();
-        
+
          // Remove any existing cookies before setting new ones
-         const accessTokenCookie = serialize('access_token', tokenData.access_token, { 
-            path: '/', 
+         const accessTokenCookie = serialize('access_token', tokenData.access_token, {
+            path: '/',
             httpOnly: false,
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: 'Strict' 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
         });
 
         // const accessTokenCookie = serialize('access_token', tokenData.access_token, { path: '/' });
         // const refreshTokenCookie = serialize('refresh_token', tokenData.refresh_token, { path: '/' });
-    
+
         const response = NextResponse.redirect(`${process.env.NEXTAUTH_URL}/sign-in`);
         response.headers.set('Set-Cookie', accessTokenCookie);
         // response.headers.set('Set-Cookie', refreshTokenCookie);
-    
+
         return response;
-    
+
     } catch (error) {
         return NextResponse.json({ error: 'An error occurred during the token exchange' }, { status: 500 });
     }
-    
+
 }
 
