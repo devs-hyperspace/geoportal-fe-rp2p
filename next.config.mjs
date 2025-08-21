@@ -4,6 +4,10 @@ const nextConfig = {
         ignoreBuildErrors: true,
     },
     images: {
+        unoptimized: false,
+        dangerouslyAllowSVG: true,
+        contentDispositionType: 'attachment',
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
         remotePatterns: [
             {
                 protocol: 'https',
@@ -59,6 +63,7 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'nodeserver.geoportal.co.id',
                 pathname: '/**',
+                port: '',
             },
         ],
     },

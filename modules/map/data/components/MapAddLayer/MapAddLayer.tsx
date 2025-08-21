@@ -120,12 +120,10 @@ export const MapAddLayer: React.FC<MapAddLayerProps> = (props) => {
                                                     <Image
                                                         src={item.thumbnail_url}
                                                         alt={item.title}
-                                                        width="0"
-                                                        height="0"
-                                                        sizes="100vw"
-                                                        className="w-full h-full"
-                                                        placeholder='blur'
-                                                        blurDataURL='/image/placeholder.jpg'
+                                                        width={300}
+                                                        height={200}
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                        className="w-full h-full object-cover"
                                                         onError={(e) => {
                                                             e.currentTarget.src = "/image/placeholder.jpg";
                                                         }}
@@ -176,6 +174,9 @@ export const MapAddLayer: React.FC<MapAddLayerProps> = (props) => {
                                                                     width={15}
                                                                     height={15}
                                                                     className="rounded-lg shrink-0"
+                                                                    onError={(e) => {
+                                                                        e.currentTarget.style.display = 'none';
+                                                                    }}
                                                                 />
                                                             )}
 
